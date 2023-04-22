@@ -10,7 +10,7 @@ import {
 
 @Entity()
 export class Room extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "pk_room_id" })
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_room_id' })
   id: UUID;
 
   @Column()

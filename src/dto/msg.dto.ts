@@ -1,6 +1,5 @@
 import {
   IsNotEmpty,
-  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -11,7 +10,7 @@ import { UUID } from 'crypto';
 export class MsgDto {
   @IsNotEmpty()
   @IsUUID()
-  room: UUID
+  room: UUID;
 
   @IsNotEmpty()
   @IsUUID()
@@ -25,7 +24,7 @@ export class MsgDto {
 }
 
 // Create a mock MsgDto
-export const mockMsgDto:MsgDto = {
+export const mockMsgDto: MsgDto = {
   room: '7d096d89-b923-4b42-a68e-01a778eecf16',
   user: '470c5100-e087-4245-9ccc-2f719e7bc11e',
   content: 'any message',

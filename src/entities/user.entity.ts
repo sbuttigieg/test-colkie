@@ -10,7 +10,7 @@ import {
 
 @Entity()
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid", { primaryKeyConstraintName: "pk_user_id" })
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_user_id' })
   id: UUID;
 
   @Column()
@@ -18,7 +18,7 @@ export class User extends BaseEntity {
 
   // @Column({foreignKeyConstraintName: "pk_room_id"})
   // room: UUID[];
-  
+
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

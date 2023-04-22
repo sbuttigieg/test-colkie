@@ -1,0 +1,21 @@
+name: Tests
+on: [push, pull_request]
+env:
+  NODE_ENV: "dev"
+  SERVER_PORT: 3000
+  POSTGRES_USER: "admin"
+  POSTGRES_PASSWORD: "admin"
+  POSTGRES_DB_NAME: "colkie"
+  POSTGRES_DB_PORT: "5432"
+  POSTGRES_DB_HOST: "postgres"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install modules
+      run: npm ci
+    - name: Run unit tests
+      run: npm run test
+    - name: Run e2e tests
+      run: npm run test:e2e

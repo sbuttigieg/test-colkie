@@ -19,7 +19,7 @@ describe('UsersService', () => {
     });
 
     it('should return the new user id"', () => {
-      expect(service.createUser(mockUserDto)).toBe('12345');
+      expect(service.createUser(mockUserDto)).toBe('470c5100-e087-4245-9ccc-2f719e7bc11e');
     });
   });
 });

@@ -2,6 +2,8 @@ import { Controller, Patch, Post, Param, Body, ParseIntPipe, ValidationPipe, Get
 import { RoomsService } from './rooms.service';
 import { MsgDto } from '../dto/msg.dto';
 import { RoomDto } from '../dto/room.dto';
+import { RoomsLatestMsgsResult } from './interfaces/rooms-latest-msgs-result.interface';
+import { UUID } from 'crypto';
 
 @Controller('rooms')
 export class RoomsController {
@@ -9,8 +11,8 @@ export class RoomsController {
 
     @Patch(':id/user/:userid')
     addUser(
-      @Param('id', ParseIntPipe) id: string,
-      @Param('userid', ParseIntPipe) userId: string,
+      @Param('id', ValidationPipe) id: UUID,
+      @Param('userid', ValidationPipe) userId: UUID,
     ): boolean {
       return this.roomsService.addUser(id, userId);
     }
@@ -24,16 +26,15 @@ export class RoomsController {
 
     @Get('/:id/msg')
     getLatestMsgs(
-      @Param('id', ParseIntPipe) id: string,
-    ): MsgDto[] {
+      @Param('id', ValidationPipe) id: UUID,
+    ): RoomsLatestMsgsResult[] {
       return this.roomsService.getLatestMsgs(id);
     }
 
-    @Post('/:id/msg')
+    @Post('/msg')
     sendMsg(
-      @Param('id', ParseIntPipe) id: string,
       @Body(ValidationPipe) msgDto: MsgDto,
     ): boolean {
-      return this.roomsService.sendMsg(id, msgDto);
+      return this.roomsService.sendMsg(msgDto);
     }
 }

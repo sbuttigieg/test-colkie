@@ -5,9 +5,8 @@ import { UserDto } from '../dto/user.dto';
 export class UsersService {
     createUser(user: UserDto): string {
         var newUser:UserDto = {
-            id: '12345',
             name: user.name
         }
-        return newUser.id;
+        return '470c5100-e087-4245-9ccc-2f719e7bc11e';
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MsgDto } from '../dto/msg.dto';
 import { RoomDto } from '../dto/room.dto';
+import { RoomsLatestMsgsResult } from './interfaces/rooms-latest-msgs-result.interface';
 
 @Injectable()
 export class RoomsService {
@@ -10,18 +11,17 @@ export class RoomsService {
     
     createRoom(room: RoomDto): string {
         var newRoom:RoomDto = {
-            id: '45',
             name: room.name
         }
 
-        return newRoom.id;
+        return '7d096d89-b923-4b42-a68e-01a778eecf16';
     }
 
-    getLatestMsgs(id: string): MsgDto[] {
-        return [{user:"123",msg:"any message"},{user:"456",msg:"another message"}]
+    getLatestMsgs(id: string): RoomsLatestMsgsResult[] {
+        return [{user:"470c5100-e087-4245-9ccc-2f719e7bc11e", content:"any message"}]// ,{user:"456",msg:"another message"}]
     }
 
-    sendMsg(id: string, msg: MsgDto): boolean {
+    sendMsg(msg: MsgDto): boolean {
         return true;
     }
 }

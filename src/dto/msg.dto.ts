@@ -5,17 +5,31 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 
 export class MsgDto {
+  @ApiProperty({
+    type: String,
+    description: 'This is a required property. Must be UUID. Cannot be Empty.',
+  })
   @IsNotEmpty()
   @IsUUID()
   room: UUID;
 
+  @ApiProperty({
+    type: String,
+    description: 'This is a required property. Must be UUID. Cannot be Empty.',
+  })
   @IsNotEmpty()
   @IsUUID()
   user: UUID;
 
+  @ApiProperty({
+    type: String,
+    description:
+      'This is a required property. Cannot be Empty.  Minimum length is 1 characters. Maximum length is 200 characters.',
+  })
   @IsNotEmpty()
   @IsString()
   @MinLength(1, { message: 'Minimum length is 1 characters' })

@@ -38,7 +38,7 @@ services:
       PORT: ${SERVER_PORT}
     volumes:
       - ./:/var/www/test-colkie
-      - /var/www/test-colkie/node_modules
+      - app:/var/www/test-colkie/node_modules
     networks:
       - colkie-network
 
@@ -48,3 +48,4 @@ networks:
 
 volumes:
   pgdata:
+  app:

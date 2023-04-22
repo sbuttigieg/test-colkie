@@ -6,12 +6,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { UUID } from 'crypto';
 
 export class RoomDto {
-  @IsOptional()
-  id: string;
-
   @IsNotEmpty()
   @IsString()
   @MinLength(5, { message: 'name: Minimum length is 5 characters' })
@@ -20,7 +17,6 @@ export class RoomDto {
 }
 
 // Create a mock MsgDto
-export const mockRoomDto = {
-  id: '45',
+export const mockRoomDto:RoomDto = {
   name: 'mock room',
 };

@@ -1,14 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+// import { AppModule } from './../src/app.module';
+import { RoomsController } from './../src/rooms/rooms.controller';
+import { RoomsService } from './../src/rooms/rooms.service';
+import { UsersController } from './../src/users/users.controller';
+import { UsersService } from './../src/users/users.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [],
+      controllers: [RoomsController, UsersController],
+      providers: [RoomsService, UsersService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -17,7 +23,7 @@ describe('AppController (e2e)', () => {
 
   it('/rooms/:id/user/:userid (PATCH)', () => {
     return request(app.getHttpServer())
-      .patch('/rooms/45/user/12345')
+      .patch('/rooms/7d096d89-b923-4b42-a68e-01a778eecf16/user/470c5100-e087-4245-9ccc-2f719e7bc11e')
       .expect(200)
       .expect('true');
   });
@@ -31,24 +37,25 @@ describe('AppController (e2e)', () => {
         }
       )
       .expect(201)
-      .expect('45');
+      .expect('7d096d89-b923-4b42-a68e-01a778eecf16');
   });
 
   
   it('/rooms/:id/msg (GET)', () => {
     return request(app.getHttpServer())
-      .get('/rooms/45/msg')
+      .get('/rooms/7d096d89-b923-4b42-a68e-01a778eecf16/msg')
       .expect(200)
-      .expect([{user:"123",msg:"any message"},{user:"456",msg:"another message"}]);
+      .expect([{user:"470c5100-e087-4245-9ccc-2f719e7bc11e",content:"any message"}]);
   });
 
-  it('/rooms/:id/msg (POST)', () => {
+  it('/rooms/msg (POST)', () => {
     return request(app.getHttpServer())
-      .post('/rooms/45/msg')
+      .post('/rooms/msg')
       .send(
         {
-          "user": "12345",
-          "msg": "any message"
+          "user": "470c5100-e087-4245-9ccc-2f719e7bc11e",
+          "room": "7d096d89-b923-4b42-a68e-01a778eecf16",
+          "content": "any message"
         }
       )
       .expect(201)
@@ -64,6 +71,6 @@ describe('AppController (e2e)', () => {
         }
       )
       .expect(201)
-      .expect('12345');
+      .expect('470c5100-e087-4245-9ccc-2f719e7bc11e');
   });
 });

@@ -20,19 +20,19 @@ describe('RoomsService', () => {
     });
     
     it('should return true', () => {
-      expect(service.addUser('45', '123')).toBe(true);
+      expect(service.addUser('7d096d89-b923-4b42-a68e-01a778eecf16', '470c5100-e087-4245-9ccc-2f719e7bc11e')).toBe(true);
     });
     
     it('should return new room id', () => {
-      expect(service.createRoom(mockRoomDto)).toBe('45');
+      expect(service.createRoom(mockRoomDto)).toBe('7d096d89-b923-4b42-a68e-01a778eecf16');
     });
 
     it('should return an array of msgs', () => {
-      expect(service.getLatestMsgs('45')).toStrictEqual([{user:"123",msg:"any message"},{user:"456",msg:"another message"}]);
+      expect(service.getLatestMsgs('7d096d89-b923-4b42-a68e-01a778eecf16')).toStrictEqual([{user:"470c5100-e087-4245-9ccc-2f719e7bc11e",content:"any message"}]);
     });
 
     it('should return true', () => {
-      expect(service.sendMsg('45', mockMsgDto)).toBe(true);
+      expect(service.sendMsg(mockMsgDto)).toBe(true);
     });
   });
 });

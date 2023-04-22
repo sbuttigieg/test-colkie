@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal:true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -16,14 +16,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB_NAME'),
-        entities: [__dirname + '/../**/*.entity.js'],        
+        entities: [__dirname + '/../**/*.entity.js'],
         synchronize: true, // comment for production
       }),
       inject: [ConfigService],
     }),
-    UsersModule, 
+    UsersModule,
     RoomsModule,
-    
   ],
   controllers: [],
   providers: [],

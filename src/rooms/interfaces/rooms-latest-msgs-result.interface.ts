@@ -1,6 +1,6 @@
-import { UUID } from "crypto";
+import { UUID } from 'crypto';
 
 export interface RoomsLatestMsgsResult {
-    user: UUID;
-    content: string;
+  user: UUID;
+  content: string;
 }

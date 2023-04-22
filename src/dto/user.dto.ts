@@ -1,12 +1,4 @@
-import {
-  IsDate,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { UUID } from 'crypto';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UserDto {
   @IsNotEmpty()
@@ -17,6 +9,6 @@ export class UserDto {
 }
 
 // Create a mock MsgDto
-export const mockUserDto:UserDto = {
+export const mockUserDto: UserDto = {
   name: 'mock-user',
 };

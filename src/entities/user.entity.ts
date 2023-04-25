@@ -16,9 +16,6 @@ export class User extends BaseEntity {
   @Column()
   name: string;
 
-  // @Column({foreignKeyConstraintName: "pk_room_id"})
-  // room: UUID[];
-
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

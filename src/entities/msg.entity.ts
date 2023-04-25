@@ -4,23 +4,26 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Room } from './room.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Message extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_msg_id' })
   id: UUID;
 
-  @Column({ foreignKeyConstraintName: 'pk_room_id' })
-  room: UUID;
-
-  @Column({ foreignKeyConstraintName: 'pk_user_id' })
-  user: UUID;
-
   @Column()
   content: string;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @ManyToOne(() => Room, (room: Room) => room.messages)
+  public room: Room;
+
+  @ManyToOne(() => User, (user: User) => user.messages)
+  public user: User;
 }

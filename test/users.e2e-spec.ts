@@ -1,14 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { UsersModule } from '../src/users/users.module';
 import { User } from '../src/entities/user.entity';
+import { UsersModule } from '../src/users/users.module';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
 
   const mockUsersRepository = {
+    create: jest.fn().mockImplementation((dto) => dto),
     save: jest.fn().mockImplementation((user) => Promise.resolve({ ...user })),
   };
 
@@ -25,7 +26,7 @@ describe('UsersController (e2e)', () => {
   });
 
   describe('Create User', () => {
-    it('/users (POST)', () => {
+    it('/users (POST)', async () => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -37,7 +38,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name less than 5 chars', () => {
+    it('/users (POST) => 400 name less than 5 chars', async() => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -53,7 +54,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name more than 30 chars', () => {
+    it('/users (POST) => 400 name more than 30 chars', async() => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -69,7 +70,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name not string', () => {
+    it('/users (POST) => 400 name not string', async() => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -89,7 +90,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name empty', () => {
+    it('/users (POST) => 400 name empty', async() => {
       return request(app.getHttpServer())
         .post('/users')
         .send({

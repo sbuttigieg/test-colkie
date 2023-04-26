@@ -1,29 +1,131 @@
-import { Injectable } from '@nestjs/common';
-import { MsgDto } from '../dto/msg.dto';
-import { RoomDto } from '../dto/room.dto';
-import { RoomsLatestMsgsResult } from './interfaces/rooms-latest-msgs-result.interface';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UUID } from 'crypto';
+import { Repository } from 'typeorm';
+import {
+  AddUserToRoomDto,
+  CreateRoomDto,
+  SendMsgToRoomDto,
+} from './dto/room.dto';
+import { Message } from '../entities/msg.entity';
+import { Room } from '../entities/room.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class RoomsService {
-  addUser(id: string, userId: string): boolean {
-    return true;
+  constructor(
+    @InjectRepository(Message)
+    private messagesRepository: Repository<Message>,
+    @InjectRepository(Room)
+    private roomsRepository: Repository<Room>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
+
+  // add user to room
+  async addUser(addUserToRoomDto: AddUserToRoomDto): Promise<boolean> {
+    try {
+      const room = await this.roomsRepository.findOneOrFail({
+        where: { id: addUserToRoomDto.room },
+      });
+      if (!room) {
+        throw new HttpException(
+          'Room with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const user = await this.usersRepository.findOneOrFail({
+        where: { id: addUserToRoomDto.user },
+      });
+      if (!user) {
+        throw new HttpException(
+          'User with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      room.users.push(user);
+      this.roomsRepository.save(room);
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  createRoom(room: RoomDto): string {
-    const newRoom: RoomDto = {
-      name: room.name,
-    };
+  // create room
+  create(createRoomDto: CreateRoomDto) {
+    const newRoom = this.roomsRepository.create(createRoomDto);
 
-    return '7d096d89-b923-4b42-a68e-01a778eecf16';
+    return this.roomsRepository.save(newRoom);
   }
 
-  getLatestMsgs(id: string): RoomsLatestMsgsResult[] {
-    return [
-      { user: '470c5100-e087-4245-9ccc-2f719e7bc11e', content: 'any message' },
-    ]; // ,{user:"456",msg:"another message"}]
+  // get latest messages from a room
+  async getLatestMsgs(id: UUID, userId: UUID): Promise<Message[]> {
+    const msgRoom = await this.roomsRepository.findOneOrFail({
+      where: { id: id },
+    });
+    if (!msgRoom) {
+      throw new HttpException(
+        'Room with this id does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const msgUser = await this.usersRepository.findOneOrFail({
+      where: { id: userId },
+    });
+    if (!msgUser) {
+      throw new HttpException(
+        'User with this id does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const timeNow = new Date(Date.now());
+
+    const msgs = await this.messagesRepository
+      .createQueryBuilder('msg')
+      .where(`msg."createdAt" > :date`, { date: msgUser.lastLogin })
+      .andWhere('msg.room = :room', { room: msgRoom.id })
+      .getMany();
+
+    msgUser.lastLogin = timeNow;
+    this.usersRepository.save(msgUser);
+
+    return msgs;
   }
 
-  sendMsg(msg: MsgDto): boolean {
+  // send msg to room
+  async sendMsg(sendMsgToRoomDto: SendMsgToRoomDto): Promise<boolean> {
+    const room = await this.roomsRepository.findOneOrFail({
+      where: { id: sendMsgToRoomDto.room },
+    });
+    if (!room) {
+      throw new HttpException(
+        'Room with this id does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const user = await this.usersRepository.findOneOrFail({
+      where: { id: sendMsgToRoomDto.user },
+    });
+    if (!user) {
+      throw new HttpException(
+        'User with this id does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const newMsg = this.messagesRepository.create({
+      content: sendMsgToRoomDto.content,
+      room: room,
+      user: user,
+    });
+
+    this.messagesRepository.save(newMsg);
     return true;
   }
 }

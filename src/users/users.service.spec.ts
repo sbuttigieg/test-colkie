@@ -6,9 +6,14 @@ import { User } from '../entities/user.entity';
 
 describe('UsersService', () => {
   let service: UsersService;
-
   const mockUsersRepository = {
     create: jest.fn().mockImplementation((dto) => dto),
+    findOne: jest.fn().mockImplementation((user) =>
+      Promise.resolve({
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+        ...user,
+      }),
+    ),
     save: jest.fn().mockImplementation((user) =>
       Promise.resolve({
         id: '470c5100-e087-4245-9ccc-2f719e7bc11e',

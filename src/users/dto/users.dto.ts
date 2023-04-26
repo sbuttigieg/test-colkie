@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -14,7 +14,7 @@ export class CreateUserDto {
   name: string;
 }
 
-// Create a mock MsgDto
+// Create a mock CreateUserDto
 export const mockCreateUserDto: CreateUserDto = {
   name: 'mock-user',
 };

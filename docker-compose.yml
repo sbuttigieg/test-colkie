@@ -16,6 +16,23 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # postgres-test:
+  #   container_name: postgres-test
+  #   image: postgres:latest
+  #   networks:
+  #     - colkie-network
+  #   environment: 
+  #     POSTGRES_PASSWORD: test
+  #     POSTGRES_USER: test
+  #     POSTGRES_DB: test
+  #   depends_on: 
+  #     - postgres
+  #   ports: 
+  #     - 5401:${POSTGRES_DB_PORT}
+  #   restart: always
+  #   volumes:
+  #     - pgdata-test:/var/lib/postgresql/data    
+
   # App service
   colkie:
     container_name: colkie
@@ -25,6 +42,7 @@ services:
       dockerfile: Dockerfile
     depends_on: 
       - postgres
+      # - postgres-test
     env_file:
       - .env
     restart: always
@@ -48,4 +66,5 @@ networks:
 
 volumes:
   pgdata:
+  # pgdata-test:
   app:

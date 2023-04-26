@@ -15,16 +15,18 @@ describe('RoomsController (e2e)', () => {
     createQueryBuilder: jest.fn(() => ({
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockReturnValueOnce(
-        [{
+      getMany: jest.fn().mockReturnValueOnce([
+        {
           id: '7d096d89-b923-4b42-a68e-01a778eecf16',
           content: 'mock-message',
-        }],
-      ),
+        },
+      ]),
     })),
-    save: jest.fn().mockImplementation((message) => Promise.resolve({ ...message })),
+    save: jest
+      .fn()
+      .mockImplementation((message) => Promise.resolve({ ...message })),
   };
-  
+
   const mockRoomsRepository = {
     create: jest.fn().mockImplementation((dto) => dto),
     findOneOrFail: jest.fn().mockImplementation((room) =>
@@ -65,7 +67,7 @@ describe('RoomsController (e2e)', () => {
   });
 
   describe('Add user to Room', () => {
-    it('/rooms/user (POST)',() => {
+    it('/rooms/user (POST)', () => {
       return request(app.getHttpServer())
         .post('/rooms/user')
         .send({
@@ -89,8 +91,8 @@ describe('RoomsController (e2e)', () => {
           expect(response.body).toEqual({ name: 'mock-name' });
         });
     });
-  
-    it('/rooms (POST) => 400 name less than 5 chars', async() => {
+
+    it('/rooms (POST) => 400 name less than 5 chars', async () => {
       return request(app.getHttpServer())
         .post('/rooms')
         .send({
@@ -106,7 +108,7 @@ describe('RoomsController (e2e)', () => {
         });
     });
 
-    it('/rooms (POST) => 400 name more than 30 chars', async() => {
+    it('/rooms (POST) => 400 name more than 30 chars', async () => {
       return request(app.getHttpServer())
         .post('/rooms')
         .send({
@@ -122,7 +124,7 @@ describe('RoomsController (e2e)', () => {
         });
     });
 
-    it('/rooms (POST) => 400 name not string', async() => {
+    it('/rooms (POST) => 400 name not string', async () => {
       return request(app.getHttpServer())
         .post('/rooms')
         .send({
@@ -142,7 +144,7 @@ describe('RoomsController (e2e)', () => {
         });
     });
 
-    it('/rooms (POST) => 400 name empty', async() => {
+    it('/rooms (POST) => 400 name empty', async () => {
       return request(app.getHttpServer())
         .post('/rooms')
         .send({
@@ -163,16 +165,20 @@ describe('RoomsController (e2e)', () => {
   });
 
   describe('Get latest messages from a room', () => {
-    it('/rooms/:id/msg (GET)',() => {
+    it('/rooms/:id/msg (GET)', () => {
       return request(app.getHttpServer())
-        .get('/rooms/7d096d89-b923-4b42-a68e-01a778eecf16/msg?user=470c5100-e087-4245-9ccc-2f719e7bc11e')
+        .get(
+          '/rooms/7d096d89-b923-4b42-a68e-01a778eecf16/msg?user=470c5100-e087-4245-9ccc-2f719e7bc11e',
+        )
         .expect(200)
-        .expect('[{"id":"7d096d89-b923-4b42-a68e-01a778eecf16","content":"mock-message"}]');
+        .expect(
+          '[{"id":"7d096d89-b923-4b42-a68e-01a778eecf16","content":"mock-message"}]',
+        );
     });
   });
 
   describe('Send msg to room', () => {
-    it('/rooms/msg (POST)',() => {
+    it('/rooms/msg (POST)', () => {
       return request(app.getHttpServer())
         .post('/rooms/msg')
         .send({

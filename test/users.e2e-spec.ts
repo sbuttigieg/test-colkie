@@ -38,7 +38,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name less than 5 chars', async() => {
+    it('/users (POST) => 400 name less than 5 chars', async () => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -54,7 +54,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name more than 30 chars', async() => {
+    it('/users (POST) => 400 name more than 30 chars', async () => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -70,7 +70,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name not string', async() => {
+    it('/users (POST) => 400 name not string', async () => {
       return request(app.getHttpServer())
         .post('/users')
         .send({
@@ -90,7 +90,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('/users (POST) => 400 name empty', async() => {
+    it('/users (POST) => 400 name empty', async () => {
       return request(app.getHttpServer())
         .post('/users')
         .send({

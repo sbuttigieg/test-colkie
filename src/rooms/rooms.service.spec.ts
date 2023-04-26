@@ -12,18 +12,18 @@ import { RoomsService } from './rooms.service';
 
 describe('RoomsService', () => {
   let service: RoomsService;
-  
+
   const mockMessagesRepository = {
     create: jest.fn().mockImplementation((dto) => dto),
     createQueryBuilder: jest.fn(() => ({
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockReturnValueOnce(
-        [{
+      getMany: jest.fn().mockReturnValueOnce([
+        {
           id: '7d096d89-b923-4b42-a68e-01a778eecf16',
           content: 'mock-message',
-        }],
-      ),
+        },
+      ]),
     })),
     save: jest.fn().mockImplementation((msg) =>
       Promise.resolve({
@@ -32,7 +32,7 @@ describe('RoomsService', () => {
       }),
     ),
   };
-  
+
   const mockRoomsRepository = {
     create: jest.fn().mockImplementation((dto) => dto),
     findOneOrFail: jest.fn().mockImplementation((room) =>
@@ -114,7 +114,7 @@ describe('RoomsService', () => {
       expect(
         service.getLatestMsgs(
           '7d096d89-b923-4b42-a68e-01a778eecf16',
-          '470c5100-e087-4245-9ccc-2f719e7bc11e'
+          '470c5100-e087-4245-9ccc-2f719e7bc11e',
         ),
       ).resolves.toEqual([
         {

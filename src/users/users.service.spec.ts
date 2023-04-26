@@ -1,27 +1,53 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
-import { mockUserDto } from '../dto/user.dto';
+import { mockCreateUserDto } from './dto/users.dto';
+import { User } from '../entities/user.entity';
 
 describe('UsersService', () => {
   let service: UsersService;
+  const mockUsersRepository = {
+    create: jest.fn().mockImplementation((dto) => dto),
+    findOne: jest.fn().mockImplementation((user) =>
+      Promise.resolve({
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+        ...user,
+      }),
+    ),
+    save: jest.fn().mockImplementation((user) =>
+      Promise.resolve({
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+        ...user,
+      }),
+    ),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockUsersRepository,
+        },
+      ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
   });
 
-  describe('root', () => {
+  describe('users.service', () => {
     it('should be defined', () => {
       expect(service).toBeDefined();
     });
+  });
 
-    it('should return the new user id"', () => {
-      expect(service.createUser(mockUserDto)).toBe(
-        '470c5100-e087-4245-9ccc-2f719e7bc11e',
-      );
+  describe('create()', () => {
+    it('should create a new user', async () => {
+      expect(await service.create(mockCreateUserDto)).toEqual({
+        name: mockCreateUserDto.name,
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+      });
     });
   });
 });

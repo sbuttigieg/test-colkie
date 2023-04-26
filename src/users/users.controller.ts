@@ -1,24 +1,49 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiCreatedResponse,
-  ApiUnprocessableEntityResponse,
-  ApiForbiddenResponse,
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
   ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { UUID } from 'crypto';
+import { CreateUserDto } from './dto/users.dto';
+import { User } from '../entities/user.entity';
 import { UsersService } from './users.service';
-import { UserDto } from '../dto/user.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  // create user
   @Post()
-  @ApiCreatedResponse({ description: 'Created Succesfully' })
-  @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiCreatedResponse({ description: 'Created Successfully' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
-  @ApiBody({ type: UserDto })
-  createUser(@Body(ValidationPipe) userDto: UserDto): string {
-    return this.usersService.createUser(userDto);
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
+  async create(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+  ): Promise<User> {
+    return await this.usersService.create(createUserDto).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to create user';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 }

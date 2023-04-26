@@ -1,52 +1,133 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import {
+  mockAddUserToRoomDto,
+  mockCreateRoomDto,
+  mockSendMsgToRoomDto,
+} from './dto/room.dto';
+import { Room } from '../entities/room.entity';
+import { User } from '../entities/user.entity';
+import { Message } from '../entities/msg.entity';
 import { RoomsService } from './rooms.service';
-import { MsgDto, mockMsgDto } from '../dto/msg.dto';
-import { mockRoomDto } from '../dto/room.dto';
 
 describe('RoomsService', () => {
   let service: RoomsService;
 
+  const mockMessagesRepository = {
+    create: jest.fn().mockImplementation((dto) => dto),
+    createQueryBuilder: jest.fn(() => ({
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockReturnValueOnce([
+        {
+          id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+          content: 'mock-message',
+        },
+      ]),
+    })),
+    save: jest.fn().mockImplementation((msg) =>
+      Promise.resolve({
+        id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+        ...msg,
+      }),
+    ),
+  };
+
+  const mockRoomsRepository = {
+    create: jest.fn().mockImplementation((dto) => dto),
+    findOne: jest.fn().mockImplementation((room) =>
+      Promise.resolve({
+        id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+        users: [],
+        ...room,
+      }),
+    ),
+    save: jest.fn().mockImplementation((room) =>
+      Promise.resolve({
+        id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+        ...room,
+      }),
+    ),
+  };
+
+  const mockUsersRepository = {
+    findOne: jest.fn().mockImplementation((user) =>
+      Promise.resolve({
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+        lastLogin: new Date('2023-04-21'),
+        ...user,
+      }),
+    ),
+    save: jest.fn().mockImplementation((user) =>
+      Promise.resolve({
+        id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
+        ...user,
+      }),
+    ),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RoomsService],
+      providers: [
+        RoomsService,
+        {
+          provide: getRepositoryToken(Message),
+          useValue: mockMessagesRepository,
+        },
+        {
+          provide: getRepositoryToken(Room),
+          useValue: mockRoomsRepository,
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockUsersRepository,
+        },
+      ],
     }).compile();
 
     service = module.get<RoomsService>(RoomsService);
   });
 
-  describe('root', () => {
+  describe('rooms.service', () => {
     it('should be defined', () => {
       expect(service).toBeDefined();
     });
+  });
 
-    it('should return true', () => {
+  describe('addUser()', () => {
+    it('should return true', async () => {
+      expect(await service.addUser(mockAddUserToRoomDto)).toEqual(true);
+    });
+  });
+
+  describe('create()', () => {
+    it('should create a new room', async () => {
+      expect(await service.create(mockCreateRoomDto)).toEqual({
+        name: mockCreateRoomDto.name,
+        id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+      });
+    });
+  });
+
+  describe('getLatesMsgs()', () => {
+    it('should return an array of msgs', async () => {
       expect(
-        service.addUser(
+        service.getLatestMsgs(
           '7d096d89-b923-4b42-a68e-01a778eecf16',
           '470c5100-e087-4245-9ccc-2f719e7bc11e',
         ),
-      ).toBe(true);
-    });
-
-    it('should return new room id', () => {
-      expect(service.createRoom(mockRoomDto)).toBe(
-        '7d096d89-b923-4b42-a68e-01a778eecf16',
-      );
-    });
-
-    it('should return an array of msgs', () => {
-      expect(
-        service.getLatestMsgs('7d096d89-b923-4b42-a68e-01a778eecf16'),
-      ).toStrictEqual([
+      ).resolves.toEqual([
         {
-          user: '470c5100-e087-4245-9ccc-2f719e7bc11e',
-          content: 'any message',
+          id: '7d096d89-b923-4b42-a68e-01a778eecf16',
+          content: 'mock-message',
         },
       ]);
     });
+  });
 
-    it('should return true', () => {
-      expect(service.sendMsg(mockMsgDto)).toBe(true);
+  describe('sendMsg()', () => {
+    it('should return true', async () => {
+      expect(await service.sendMsg(mockSendMsgToRoomDto)).toEqual(true);
     });
   });
 });

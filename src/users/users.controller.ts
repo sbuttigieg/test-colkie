@@ -12,6 +12,8 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
@@ -28,8 +30,9 @@ export class UsersController {
   // create user
   @Post()
   @ApiBody({ type: CreateUserDto })
-  @ApiCreatedResponse({ description: 'Created Succesfully' })
+  @ApiCreatedResponse({ description: 'Created Successfully' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @ApiOperation({ summary: 'Create a new user' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
   async create(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
@@ -46,9 +49,10 @@ export class UsersController {
 
   // get user by id
   @Get('/:id')
-  @ApiCreatedResponse({ description: 'The resource was returned successfully' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @ApiOkResponse({ description: 'The resource was returned successfully' })
+  @ApiOperation({ summary: 'Get user by id' })
   async getOne(@Param('id', ValidationPipe) id: UUID): Promise<User> {
     try {
       return await this.usersService.getOne(id);

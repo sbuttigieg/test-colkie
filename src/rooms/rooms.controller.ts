@@ -15,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
@@ -39,6 +40,7 @@ export class RoomsController {
   @ApiCreatedResponse({ description: 'Added Succesfully' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @ApiNotFoundResponse({ description: 'Resource not found' })
+  @ApiOperation({ summary: 'Add a user to a room' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
   async addUser(
     @Body(ValidationPipe) addUserToRoomDto: AddUserToRoomDto,
@@ -58,6 +60,7 @@ export class RoomsController {
   @ApiBody({ type: CreateRoomDto })
   @ApiCreatedResponse({ description: 'Created Succesfully' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @ApiOperation({ summary: 'Create a new room' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
   async create(
     @Body(ValidationPipe) createRoomDto: CreateRoomDto,
@@ -77,6 +80,7 @@ export class RoomsController {
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @ApiNotFoundResponse({ description: 'Resource not found' })
   @ApiOkResponse({ description: 'The resource was returned successfully' })
+  @ApiOperation({ summary: 'Get latest messages from a room' })
   getLatestMsgs(
     @Param('id', ValidationPipe) id: UUID,
     @Query('user', ValidationPipe) user: UUID,
@@ -90,6 +94,7 @@ export class RoomsController {
   @ApiCreatedResponse({ description: 'Created Succesfully' })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @ApiNotFoundResponse({ description: 'Resource not found' })
+  @ApiOperation({ summary: 'Send msg to room' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
   sendMsg(
     @Body(ValidationPipe) sendMsgToRoomDto: SendMsgToRoomDto,

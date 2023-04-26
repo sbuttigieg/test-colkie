@@ -1,10 +1,8 @@
 import {
   Body,
   Controller,
-  Get,
   HttpException,
   HttpStatus,
-  Param,
   Post,
   ValidationPipe,
 } from '@nestjs/common';
@@ -12,12 +10,10 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { UUID } from 'crypto';
 import { CreateUserDto } from './dto/users.dto';
 import { User } from '../entities/user.entity';
 import { UsersService } from './users.service';

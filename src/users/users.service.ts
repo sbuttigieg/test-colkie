@@ -21,26 +21,4 @@ export class UsersService {
       throw error;
     }
   }
-
-  getOne(id: UUID) {
-    try {
-      const user = this.usersRepository.findOne({
-        where: {
-          id,
-        },
-        relations: ['rooms'],
-        select: ['id', 'name'],
-      });
-      if (!user) {
-        throw new HttpException(
-          'User with this id does not exist',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
 }

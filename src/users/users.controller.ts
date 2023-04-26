@@ -46,21 +46,4 @@ export class UsersController {
       throw new HttpException(err.message, err.status);
     });
   }
-
-  // get user by id
-  @Get('/:id')
-  @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
-  @ApiForbiddenResponse({ description: 'Unauthorized Request' })
-  @ApiOkResponse({ description: 'The resource was returned successfully' })
-  @ApiOperation({ summary: 'Get user by id' })
-  async getOne(@Param('id', ValidationPipe) id: UUID): Promise<User> {
-    return await this.usersService.getOne(id).catch((err) => {
-      if (!err.status) {
-        err.message = 'Failed to get user by id';
-        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      }
-
-      throw new HttpException(err.message, err.status);
-    });
-  }
 }

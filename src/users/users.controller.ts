@@ -37,14 +37,14 @@ export class UsersController {
   async create(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<User> {
-    try {
-      return await this.usersService.create(createUserDto);
-    } catch (error) {
-      throw new HttpException(
-        'Failed to create user',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.usersService.create(createUserDto).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to create user';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 
   // get user by id
@@ -54,10 +54,13 @@ export class UsersController {
   @ApiOkResponse({ description: 'The resource was returned successfully' })
   @ApiOperation({ summary: 'Get user by id' })
   async getOne(@Param('id', ValidationPipe) id: UUID): Promise<User> {
-    try {
-      return await this.usersService.getOne(id);
-    } catch (error) {
-      throw new HttpException('Failed to get user by id', HttpStatus.NOT_FOUND);
-    }
+    return await this.usersService.getOne(id).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to get user by id';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 }

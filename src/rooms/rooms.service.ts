@@ -25,7 +25,7 @@ export class RoomsService {
   // add user to room
   async addUser(addUserToRoomDto: AddUserToRoomDto): Promise<boolean> {
     try {
-      const room = await this.roomsRepository.findOneOrFail({
+      const room = await this.roomsRepository.findOne({
         where: { id: addUserToRoomDto.room },
       });
       if (!room) {
@@ -35,7 +35,7 @@ export class RoomsService {
         );
       }
 
-      const user = await this.usersRepository.findOneOrFail({
+      const user = await this.usersRepository.findOne({
         where: { id: addUserToRoomDto.user },
       });
       if (!user) {
@@ -56,76 +56,88 @@ export class RoomsService {
 
   // create room
   create(createRoomDto: CreateRoomDto) {
-    const newRoom = this.roomsRepository.create(createRoomDto);
+    try {
+      const newRoom = this.roomsRepository.create(createRoomDto);
 
-    return this.roomsRepository.save(newRoom);
+      return this.roomsRepository.save(newRoom);
+    } catch (error) {
+      throw error;
+    }
   }
 
   // get latest messages from a room
   async getLatestMsgs(id: UUID, userId: UUID): Promise<Message[]> {
-    const msgRoom = await this.roomsRepository.findOneOrFail({
-      where: { id: id },
-    });
-    if (!msgRoom) {
-      throw new HttpException(
-        'Room with this id does not exist',
-        HttpStatus.NOT_FOUND,
-      );
+    try {
+      const msgRoom = await this.roomsRepository.findOne({
+        where: { id: id },
+      });
+      if (!msgRoom) {
+        throw new HttpException(
+          'Room with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const msgUser = await this.usersRepository.findOne({
+        where: { id: userId },
+      });
+      if (!msgUser) {
+        throw new HttpException(
+          'User with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const timeNow = new Date(Date.now());
+
+      const msgs = await this.messagesRepository
+        .createQueryBuilder('msg')
+        .where(`msg."createdAt" > :date`, { date: msgUser.lastLogin })
+        .andWhere('msg.room = :room', { room: msgRoom.id })
+        .getMany();
+
+      msgUser.lastLogin = timeNow;
+      this.usersRepository.save(msgUser);
+
+      return msgs;
+    } catch (error) {
+      throw error;
     }
-
-    const msgUser = await this.usersRepository.findOneOrFail({
-      where: { id: userId },
-    });
-    if (!msgUser) {
-      throw new HttpException(
-        'User with this id does not exist',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const timeNow = new Date(Date.now());
-
-    const msgs = await this.messagesRepository
-      .createQueryBuilder('msg')
-      .where(`msg."createdAt" > :date`, { date: msgUser.lastLogin })
-      .andWhere('msg.room = :room', { room: msgRoom.id })
-      .getMany();
-
-    msgUser.lastLogin = timeNow;
-    this.usersRepository.save(msgUser);
-
-    return msgs;
   }
 
   // send msg to room
   async sendMsg(sendMsgToRoomDto: SendMsgToRoomDto): Promise<boolean> {
-    const room = await this.roomsRepository.findOneOrFail({
-      where: { id: sendMsgToRoomDto.room },
-    });
-    if (!room) {
-      throw new HttpException(
-        'Room with this id does not exist',
-        HttpStatus.NOT_FOUND,
-      );
+    try {
+      const room = await this.roomsRepository.findOne({
+        where: { id: sendMsgToRoomDto.room },
+      });
+      if (!room) {
+        throw new HttpException(
+          'Room with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const user = await this.usersRepository.findOne({
+        where: { id: sendMsgToRoomDto.user },
+      });
+      if (!user) {
+        throw new HttpException(
+          'User with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const newMsg = this.messagesRepository.create({
+        content: sendMsgToRoomDto.content,
+        room: room,
+        user: user,
+      });
+
+      this.messagesRepository.save(newMsg);
+      return true;
+    } catch (error) {
+      throw error;
     }
-
-    const user = await this.usersRepository.findOneOrFail({
-      where: { id: sendMsgToRoomDto.user },
-    });
-    if (!user) {
-      throw new HttpException(
-        'User with this id does not exist',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const newMsg = this.messagesRepository.create({
-      content: sendMsgToRoomDto.content,
-      room: room,
-      user: user,
-    });
-
-    this.messagesRepository.save(newMsg);
-    return true;
   }
 }

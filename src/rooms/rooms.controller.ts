@@ -45,14 +45,14 @@ export class RoomsController {
   async addUser(
     @Body(ValidationPipe) addUserToRoomDto: AddUserToRoomDto,
   ): Promise<boolean> {
-    try {
-      return await this.roomsService.addUser(addUserToRoomDto);
-    } catch (error) {
-      throw new HttpException(
-        'Failed to add user to room',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.roomsService.addUser(addUserToRoomDto).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to add user to room';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 
   // create room
@@ -65,14 +65,14 @@ export class RoomsController {
   async create(
     @Body(ValidationPipe) createRoomDto: CreateRoomDto,
   ): Promise<Room> {
-    try {
-      return await this.roomsService.create(createRoomDto);
-    } catch (error) {
-      throw new HttpException(
-        'Failed to create room',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.roomsService.create(createRoomDto).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to create room';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 
   // get latest messages from a room
@@ -81,11 +81,18 @@ export class RoomsController {
   @ApiNotFoundResponse({ description: 'Resource not found' })
   @ApiOkResponse({ description: 'The resource was returned successfully' })
   @ApiOperation({ summary: 'Get latest messages from a room' })
-  getLatestMsgs(
+  async getLatestMsgs(
     @Param('id', ValidationPipe) id: UUID,
     @Query('user', ValidationPipe) user: UUID,
   ): Promise<Message[]> {
-    return this.roomsService.getLatestMsgs(id, user);
+    return await this.roomsService.getLatestMsgs(id, user).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to get latest messages';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 
   // send msg to room
@@ -96,9 +103,16 @@ export class RoomsController {
   @ApiNotFoundResponse({ description: 'Resource not found' })
   @ApiOperation({ summary: 'Send msg to room' })
   @ApiUnprocessableEntityResponse({ description: 'Bad Request' })
-  sendMsg(
+  async sendMsg(
     @Body(ValidationPipe) sendMsgToRoomDto: SendMsgToRoomDto,
   ): Promise<boolean> {
-    return this.roomsService.sendMsg(sendMsgToRoomDto);
+    return await this.roomsService.sendMsg(sendMsgToRoomDto).catch((err) => {
+      if (!err.status) {
+        err.message = 'Failed to send message';
+        err.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      }
+
+      throw new HttpException(err.message, err.status);
+    });
   }
 }

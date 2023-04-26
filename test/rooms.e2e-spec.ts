@@ -29,7 +29,7 @@ describe('RoomsController (e2e)', () => {
 
   const mockRoomsRepository = {
     create: jest.fn().mockImplementation((dto) => dto),
-    findOneOrFail: jest.fn().mockImplementation((room) =>
+    findOne: jest.fn().mockImplementation((room) =>
       Promise.resolve({
         id: '7d096d89-b923-4b42-a68e-01a778eecf16',
         users: [],
@@ -40,7 +40,7 @@ describe('RoomsController (e2e)', () => {
   };
 
   const mockUsersRepository = {
-    findOneOrFail: jest.fn().mockImplementation((user) =>
+    findOne: jest.fn().mockImplementation((user) =>
       Promise.resolve({
         id: '470c5100-e087-4245-9ccc-2f719e7bc11e',
         lastLogin: new Date('2023-04-21'),

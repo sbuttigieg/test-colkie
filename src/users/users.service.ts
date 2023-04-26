@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { Repository } from 'typeorm';
@@ -22,22 +22,21 @@ export class UsersService {
     }
   }
 
-  // getAll() {
-  //   return this.usersRepository.find({
-  //     relations: ['rooms', ' messages'],
-  //     select: ['id', 'name'],
-  //   });
-  // }
-
   getOne(id: UUID) {
     try {
-      const user = this.usersRepository.findOneOrFail({
+      const user = this.usersRepository.findOne({
         where: {
           id,
         },
         relations: ['rooms'],
         select: ['id', 'name'],
       });
+      if (!user) {
+        throw new HttpException(
+          'User with this id does not exist',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
       return user;
     } catch (error) {
